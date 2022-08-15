@@ -1,0 +1,139 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Page</title>
+   <!--Made with love by Mutiullah Samim -->
+   
+	<!--Bootsrap 4 CDN-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+    <!--Fontawesome CDN-->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+	<!--Custom styles-->
+	<link rel="stylesheet" type="text/css" href="/auth/style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="d-flex justify-content-center h-100">
+			<div class="card">
+				<div class="card-header">
+					<h3>Sign In</h3>
+					<div class="d-flex justify-content-end social_icon">
+						<span onclick="loginOAuth('facebook')"><i class="fab fa-facebook-square"></i></span>
+						<span onclick="loginOAuth('google')"><i class="fab fa-google-plus-square"></i></span>
+						<span onclick="loginOAuth('github')"><i class="fab fa-github-square"></i></span>
+					</div>
+				</div>
+				<div class="card-body">
+					<form method="post" action="" onsubmit="login()">
+						<div class="input-group form-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="fas fa-user"></i></span>
+							</div>
+							<input id="email" type="text" class="form-control" placeholder="Email">
+							
+						</div>
+						<div class="input-group form-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="fas fa-key"></i></span>
+							</div>
+							<input id="password" type="password" class="form-control" placeholder="Password">
+						</div>
+						<div class="row align-items-center remember">
+							<input type="checkbox">Remember Me
+						</div>
+						<div class="form-group">
+							<input type="submit" value="Login" class="btn float-right login_btn">
+						</div>
+					</form>
+				</div>
+				<div class="card-footer">
+					<div class="d-flex justify-content-center links">
+						Don't have an account?<a target="_blank" href="signup.html">Sign Up</a>
+					</div>
+					<div class="d-flex justify-content-center">
+						<a href="#">Forgot your password?</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        if (getCookie("token")) {
+            window.location.replace("http://localhost:5000/auth/loginSuccess.html");
+        }
+
+		function login() {
+			event.preventDefault()
+			let email = document.getElementById('email').value
+			let password = document.getElementById('password').value
+
+			console.log("4444", email, password)
+			const data = { 
+				email: email,
+				password: password
+			};
+
+			fetch('http://localhost:5000/api/auth/login', {
+				method: 'POST',
+				headers: {
+					'Access-Control-Allow-Origin': 'http://localhost:5000',
+					'Access-Control-Allow-Credentials': 'true',
+					'Content-Type': 'application/json',
+					'Accept':'application/json',
+				},
+				body: JSON.stringify(data),
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				window.location.reload();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		}
+
+		function loginOAuth(type) {
+			let urlOAuth;
+
+			switch (type) {
+				case "facebook":
+					urlOAuth = "http://localhost:5000/api/auth/facebook"
+					break
+				case "google":
+					urlOAuth = "http://localhost:5000/api/auth/google"
+					break
+				case "github":
+					urlOAuth = "http://localhost:5000/api/auth/github"
+					break
+			}
+
+			window.open(urlOAuth, "", `height=500,width=500,top=${window.innerHeight/2}, left=${window.innerWidth/2}`);
+		}
+	</script>
+</body>
+</html>
